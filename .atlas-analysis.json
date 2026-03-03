@@ -1,0 +1,70 @@
+{
+  "projectType": "cli-tool",
+  "projectName": "FinFram Screener",
+  "projectDescription": "A modular CLI tool for automated stock analysis and AI-powered forecasting using historical market data and LLM insights.",
+  "theme": "aspen",
+  "primaryColor": "#10B981",
+  "lightColor": "#34D399",
+  "darkColor": "#059669",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "pages": [
+          "introduction",
+          "installation",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Configuration",
+        "pages": [
+          "configuration/settings",
+          "configuration/api-keys",
+          "configuration/models"
+        ]
+      },
+      {
+        "group": "Usage Guide",
+        "pages": [
+          "usage/running-screener",
+          "usage/interactive-mode",
+          "usage/examples"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "pages": [
+          "api/stock-data",
+          "api/prompt-builder",
+          "api/groq-api",
+          "api/utils",
+          "api/config"
+        ]
+      },
+      {
+        "group": "Troubleshooting",
+        "pages": [
+          "troubleshooting/common-issues",
+          "troubleshooting/faq"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Pulls 6-month historical stock data via yfinance",
+    "Computes price statistics and volatility metrics",
+    "Builds structured prompts for financial forecasting",
+    "Queries AI models via OpenAI-compatible API",
+    "Interactive terminal with styled output using rich",
+    "Configurable AI model and parameters"
+  ],
+  "publicApiSurface": [
+    "get_stock_history(ticker, period)",
+    "build_prompt(ticker, history_df)",
+    "query_api(prompt)",
+    "display_result(text)",
+    "API_KEY",
+    "SETTINGS"
+  ]
+}
