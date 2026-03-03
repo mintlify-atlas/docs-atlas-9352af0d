@@ -1,0 +1,228 @@
+---
+title: Running the Screener
+description: Learn how to run FinFram Screener and understand its output
+icon: play
+---
+
+## Basic Usage
+
+To run FinFram Screener, execute the main script from your terminal:
+
+```bash
+python main.py
+```
+
+<Note>
+Make sure you have configured your API key in the `.env` file before running the screener.
+</Note>
+
+## Step-by-Step Execution Flow
+
+<Steps>
+  <Step title="Launch the Application">
+    When you run `python main.py`, the screener displays a welcome message:
+    
+    ```
+    📊 Welcome to FinFram Screener
+    ```
+    
+    The application is now ready to analyze stocks.
+  </Step>
+  
+  <Step title="Enter Stock Ticker">
+    You'll be prompted to enter a stock ticker symbol:
+    
+    ```
+    Enter stock ticker (e.g., AAPL):
+    ```
+    
+    Type the ticker symbol (like `AAPL`, `TSLA`, `MSFT`) and press Enter. The ticker is automatically converted to uppercase.
+    
+    **Source:** `main.py:11`
+    ```python
+    ticker = input("Enter stock ticker (e.g., AAPL): ").upper()
+    ```
+  </Step>
+  
+  <Step title="Data Retrieval">
+    The screener fetches 6 months of historical stock data using yfinance:
+    
+    ```python
+    history = get_stock_history(ticker)
+    ```
+    
+    This retrieves:
+    - Daily closing prices
+    - Volume data
+    - Historical price movements
+    
+    **Source:** `stock_data.py:3-12`
+    
+    <Warning>
+    If the ticker is invalid or data cannot be retrieved, you'll see:
+    ```
+    ❌ Could not retrieve stock data. Please try another ticker.
+    ```
+    </Warning>
+  </Step>
+  
+  <Step title="Prompt Generation">
+    The system builds an intelligent prompt with calculated metrics:
+    
+    ```python
+    finance = build_prompt(ticker, history)
+    ```
+    
+    The prompt includes:
+    - **Average closing price** over 6 months
+    - **Latest closing price**
+    - **Volatility** (standard deviation)
+    
+    **Source:** `prompt_builder.py:1-14`
+  </Step>
+  
+  <Step title="AI Analysis">
+    The prompt is sent to the Groq API for analysis:
+    
+    ```python
+    result = query_api(finance)
+    ```
+    
+    The AI considers:
+    - Macroeconomic trends
+    - Recent earnings reports
+    - Geopolitical risks
+    - Next quarter performance forecast
+    - Red flags and opportunities
+  </Step>
+  
+  <Step title="Display Results">
+    The analysis is displayed in a formatted, readable markdown output:
+    
+    ```python
+    display_result(result)
+    ```
+    
+    You'll see:
+    - A green header: **FinFram Screener Forecast**
+    - Markdown-formatted analysis
+    - Key insights and recommendations
+    
+    **Source:** `utils.py:4-7`
+  </Step>
+  
+  <Step title="Interactive Mode Activated">
+    After the initial forecast, the screener enters interactive mode:
+    
+    ```
+    ⤷ Enter your prompt:
+    ```
+    
+    You can now ask follow-up questions about the stock. See [Interactive Mode](/usage/interactive-mode) for details.
+    
+    **Source:** `main.py:18-22`
+  </Step>
+</Steps>
+
+## Understanding the Output
+
+The screener's analysis typically includes:
+
+### Forecast Summary
+A high-level overview of expected performance for the next quarter.
+
+### Key Metrics Analysis
+- **Price Trends**: Analysis of the 6-month average vs. current price
+- **Volatility Assessment**: Risk level based on standard deviation
+- **Market Context**: How external factors may impact the stock
+
+### Risk Factors
+Potential red flags such as:
+- High volatility
+- Declining price trends
+- Industry-specific risks
+- Macroeconomic headwinds
+
+### Opportunities
+Positive signals including:
+- Growth potential
+- Strong fundamentals
+- Favorable market conditions
+
+### Recommendation
+A data-driven conclusion on whether to buy, hold, or avoid the stock.
+
+## Example Output Structure
+
+```markdown
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          FinFram Screener Forecast
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Stock Analysis: AAPL
+
+## Overview
+Based on the last 6 months of data...
+
+## Key Findings
+- Average Price: $175.50
+- Current Price: $182.30
+- Volatility: 8.45
+
+## Forecast
+[AI-generated analysis]
+
+## Risks
+[Identified risks]
+
+## Opportunities
+[Growth opportunities]
+```
+
+## Error Handling
+
+The screener includes built-in error handling:
+
+### Invalid Ticker
+```
+❌ Could not retrieve stock data. Please try another ticker.
+```
+**Solution:** Double-check the ticker symbol and try again.
+
+### API Errors
+```
+❌ API request failed: [error details]
+```
+**Solution:** Check your API key configuration and internet connection.
+
+### General Errors
+```
+❌ Error: [error message]
+```
+**Solution:** Review the error message for specific guidance.
+
+## Tips for Best Results
+
+<CardGroup cols={2}>
+  <Card title="Use Valid Tickers" icon="check">
+    Ensure you're using official stock ticker symbols from major exchanges (NYSE, NASDAQ).
+  </Card>
+  
+  <Card title="Check Market Hours" icon="clock">
+    Recent data may be delayed. The screener uses the most recently available data from yfinance.
+  </Card>
+  
+  <Card title="Review Full Analysis" icon="magnifying-glass">
+    Read the complete output before asking follow-up questions for better context.
+  </Card>
+  
+  <Card title="Monitor Performance" icon="chart-line">
+    Use the screener regularly to track changes in stock forecasts over time.
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<Card title="Learn Interactive Mode" icon="comments" href="/usage/interactive-mode">
+  Discover how to ask follow-up questions and get deeper insights.
+</Card>

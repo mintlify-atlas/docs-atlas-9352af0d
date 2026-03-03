@@ -1,0 +1,101 @@
+---
+title: "Utils"
+description: "Utility functions for displaying formatted output"
+---
+
+## display_result
+
+Displays the AI-generated financial analysis in a formatted, readable style using the Rich library.
+
+### Function Signature
+
+```python
+def display_result(text: str)
+```
+
+### Parameters
+
+<ParamField path="text" type="str" required>
+  The analysis text to display. Supports Markdown formatting for enhanced readability.
+</ParamField>
+
+### Output Features
+
+The function uses the Rich Console library to provide:
+
+1. **Horizontal Rule**: A bold green header titled "FinFram Screener Forecast"
+2. **Markdown Rendering**: Full Markdown syntax support including:
+   - Headers
+   - Bold and italic text
+   - Lists (ordered and unordered)
+   - Code blocks
+   - Links
+3. **Styled Text**: Output is displayed in a bright black color for better readability
+
+### Example Usage
+
+```python
+from utils import display_result
+from groq_api import query_api
+
+# Get analysis from API
+analysis = query_api(prompt)
+
+# Display formatted output
+display_result(analysis)
+```
+
+### Visual Output
+
+The output appears in the terminal with:
+
+```text
+────────────────── FinFram Screener Forecast ──────────────────
+
+[Formatted markdown content with styling]
+```
+
+### Rich Console Features
+
+The function leverages Rich's capabilities:
+
+- **console.rule()**: Creates a horizontal divider with centered text
+- **Markdown()**: Parses and renders markdown syntax
+- **Style**: Applies color and formatting to the output
+
+### Example with Markdown
+
+```python
+analysis_text = """
+# AAPL Stock Analysis
+
+## Key Findings
+- **Price Trend**: Upward momentum
+- **Volatility**: Moderate at 12.67
+
+## Forecast
+Expect continued growth in Q2 2026.
+"""
+
+display_result(analysis_text)
+```
+
+### Source Code
+
+```python
+from rich.console import Console
+from rich.markdown import Markdown
+
+def display_result(text: str):
+    console = Console()
+    console.rule("[bold green]FinFram Screener Forecast")
+    console.print(Markdown(text), style="bright_black")
+```
+
+### Dependencies
+
+This function requires the Rich library:
+
+```bash
+pip install rich
+```

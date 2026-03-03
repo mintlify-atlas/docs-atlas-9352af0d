@@ -1,0 +1,518 @@
+---
+title: Real-World Examples
+description: Complete examples of stock analysis sessions with FinFram Screener
+icon: book-open
+---
+
+## Overview
+
+This guide provides real-world examples of using FinFram Screener to analyze stocks, demonstrating the full workflow from initial analysis to interactive follow-up questions.
+
+## Example 1: Analyzing a Tech Stock (AAPL)
+
+### Scenario
+You want to evaluate Apple Inc. (AAPL) for a potential medium-term investment.
+
+### Terminal Session
+
+```bash
+$ python main.py
+📊 Welcome to FinFram Screener
+Enter stock ticker (e.g., AAPL): AAPL
+```
+
+### Initial Analysis Output
+
+```markdown
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          FinFram Screener Forecast
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Stock Analysis: AAPL
+
+## Overview
+Based on 6 months of historical data, Apple Inc. shows moderate 
+volatility with a positive price trend.
+
+## Key Metrics
+- **Average Closing Price (6mo)**: $175.50
+- **Latest Closing Price**: $182.30
+- **Volatility (Std Dev)**: $8.45
+
+## Performance Forecast - Next Quarter
+
+Apple is positioned for moderate growth in Q2 2026. The stock has 
+demonstrated resilience above its 6-month average, suggesting strong 
+investor confidence. Key upcoming catalysts include:
+
+1. **iPhone 17 Launch**: Expected to drive revenue growth
+2. **Services Growth**: Continued expansion in high-margin segments
+3. **AI Integration**: Vision Pro and AI features gaining traction
+
+## Risk Factors
+
+### High Severity
+- **Regulatory Pressure**: EU and US antitrust scrutiny increasing
+- **China Exposure**: ~20% revenue dependent on Chinese market
+
+### Moderate Severity
+- **Market Saturation**: Smartphone replacement cycles lengthening
+- **Supply Chain**: Continued geopolitical tensions with China
+
+## Opportunities
+
+- **Margin Expansion**: Services now 25% of revenue at 70% margins
+- **Market Share**: Growing Android switcher rate
+- **Buyback Program**: $90B remaining, supporting share price
+
+## Recommendation
+
+**HOLD with positive outlook**
+
+Current valuation is fair. For new positions, consider entry points 
+near $175 (6-month average). The stock's moderate volatility makes 
+it suitable for risk-averse investors.
+```
+
+### Follow-Up Questions
+
+```
+⤷ Enter your prompt:
+What specific earnings metrics should I watch for in the next report?
+```
+
+**Response:**
+```markdown
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          FinFram Screener Forecast
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Key Earnings Metrics for AAPL
+
+## Critical Metrics to Monitor
+
+1. **Services Revenue Growth**
+   - Target: >12% YoY growth
+   - Why: Highest margin segment, drives valuation multiple
+
+2. **iPhone Revenue**
+   - Watch for: Stabilization or growth
+   - Current concern: Market saturation
+
+3. **Gross Margin**
+   - Target: Maintain above 44%
+   - Indicator of pricing power and mix shift to services
+
+4. **Greater China Revenue**
+   - Critical: Any decline signals major risk
+   - Expect: Stabilization around $15-17B quarterly
+
+5. **Operating Cash Flow**
+   - Target: >$25B quarterly
+   - Supports buyback program sustainability
+```
+
+```
+⤷ Enter your prompt:
+Is now a good time to buy, or should I wait?
+```
+
+**Response:**
+```markdown
+# Entry Timing Analysis for AAPL
+
+## Current Price Context
+- **Current**: $182.30
+- **6-month Average**: $175.50
+- **Premium**: +3.9% above average
+
+## Recommendation
+
+**WAIT for pullback** to $175-177 range for optimal risk/reward.
+
+## Reasoning
+1. Stock is trading above its moving average
+2. No immediate catalysts before earnings (3 weeks away)
+3. General market volatility may create better entry
+
+## Alternative Strategy
+- **Dollar-Cost Average**: Buy 1/3 position now, 1/3 at $178, 1/3 at $175
+- **Risk**: May not pull back if earnings beat expectations
+```
+
+<Tip>
+**Insight**: The screener provided actionable guidance by comparing current price to historical average and suggesting specific entry strategies.
+</Tip>
+
+---
+
+## Example 2: Comparing Multiple Stocks
+
+### Scenario
+You want to compare two EV manufacturers: Tesla (TSLA) and Rivian (RIVN).
+
+### First Stock: TSLA
+
+```bash
+$ python main.py
+📊 Welcome to FinFram Screener
+Enter stock ticker (e.g., AAPL): TSLA
+```
+
+**Analysis Summary:**
+- **Average Price**: $245.80
+- **Current Price**: $238.50
+- **Volatility**: $22.15 (High)
+- **Outlook**: HOLD - High volatility, awaiting Model 2 launch details
+
+```
+⤷ Enter your prompt:
+What's the biggest risk factor for TSLA right now?
+```
+
+**Response Highlights:**
+- Competition from cheaper Chinese EVs (BYD)
+- Margin compression from price cuts
+- Elon Musk's divided attention (Twitter/X, SpaceX)
+
+### Second Stock: RIVN
+
+```bash
+$ python main.py
+📊 Welcome to FinFram Screener
+Enter stock ticker (e.g., AAPL): RIVN
+```
+
+**Analysis Summary:**
+- **Average Price**: $12.40
+- **Current Price**: $11.85
+- **Volatility**: $2.30 (Very High - relative to price)
+- **Outlook**: SPECULATIVE - Not profitable, high burn rate
+
+```
+⤷ Enter your prompt:
+Compare this to Tesla's risk profile
+```
+
+**Response Highlights:**
+- RIVN has higher execution risk (pre-profitability)
+- TSLA has market risk but established revenue
+- RIVN more volatile in percentage terms
+- Different investment horizons: TSLA (1-2 years), RIVN (3-5 years)
+
+### Comparison Summary
+
+<CardGroup cols={2}>
+  <Card title="TSLA - Established Player" icon="bolt">
+    **Pros:**
+    - Profitable with positive cash flow
+    - Market leader in EVs
+    - Diversified (energy, AI/FSD)
+    
+    **Cons:**
+    - High volatility
+    - Valuation dependent on growth story
+    - Competitive pressure
+  </Card>
+  
+  <Card title="RIVN - High-Risk/High-Reward" icon="rocket">
+    **Pros:**
+    - Niche market (trucks/SUVs)
+    - Amazon partnership
+    - Growing production
+    
+    **Cons:**
+    - Not yet profitable
+    - High cash burn
+    - Execution risk
+  </Card>
+</CardGroup>
+
+---
+
+## Example 3: Deep Dive on Risks & Opportunities
+
+### Scenario
+Detailed risk assessment for a financial stock (JPM).
+
+```bash
+$ python main.py
+📊 Welcome to FinFram Screener
+Enter stock ticker (e.g., AAPL): JPM
+```
+
+### Initial Output
+
+```markdown
+# Stock Analysis: JPM (JPMorgan Chase)
+
+## Overview
+JPMorgan shows low volatility and stable performance, benefiting 
+from higher interest rates.
+
+## Key Metrics
+- **Average Price**: $185.20
+- **Current Price**: $192.50
+- **Volatility**: $6.80 (Low)
+
+## Forecast
+Stable to positive outlook. Net interest income benefits from rate 
+environment. Strong capital position.
+```
+
+### Asking About Specific Risks
+
+```
+⤷ Enter your prompt:
+List the top 5 risks in order of severity
+```
+
+**Response:**
+```markdown
+# Top 5 Risks for JPM - Ranked by Severity
+
+## 1. Interest Rate Policy Reversal (HIGH)
+**Impact**: Net interest margin compression if Fed cuts rates
+**Probability**: Moderate (50% chance of cuts in 2026)
+**Mitigation**: Diversified revenue streams (investment banking, wealth)
+
+## 2. Commercial Real Estate Exposure (HIGH)
+**Impact**: $50B+ exposure to troubled CRE sector
+**Probability**: High (office vacancies at record levels)
+**Mitigation**: Strong reserves, but losses likely
+
+## 3. Regulatory Changes (MEDIUM)
+**Impact**: Higher capital requirements reducing ROE
+**Probability**: Medium (Basel III endgame rules pending)
+**Mitigation**: JPM has strongest capital position among peers
+
+## 4. Economic Recession (MEDIUM)
+**Impact**: Loan losses, reduced deal activity
+**Probability**: Low-Medium (30% recession odds)
+**Mitigation**: Diversification, fortress balance sheet
+
+## 5. Cybersecurity Threats (LOW-MEDIUM)
+**Impact**: Reputational damage, regulatory fines
+**Probability**: Ongoing threat
+**Mitigation**: Industry-leading security infrastructure
+```
+
+### Exploring Opportunities
+
+```
+⤷ Enter your prompt:
+What are the top 3 growth opportunities that could drive the stock higher?
+```
+
+**Response:**
+```markdown
+# Top 3 Growth Opportunities for JPM
+
+## 1. Wealth Management Expansion
+**Potential**: $5B+ in additional revenue
+**Catalyst**: Capturing millennial wealth transfer ($84T over 20 years)
+**Timeline**: 2-5 years
+**Current Status**: Launched self-directed platform, acquiring RIAs
+
+## 2. Investment Banking Recovery
+**Potential**: 30-40% revenue upside in IB division
+**Catalyst**: M&A activity rebound, IPO market reopening
+**Timeline**: 12-18 months
+**Trigger**: Market stability, rate clarity
+
+## 3. Technology/Fintech Integration
+**Potential**: Cost savings + new revenue streams
+**Catalyst**: AI in customer service, blockchain for settlements
+**Timeline**: Ongoing
+**Competitive Edge**: $15B annual tech budget, most of any bank
+```
+
+### Risk Mitigation Strategy
+
+```
+⤷ Enter your prompt:
+How can I hedge the interest rate risk if I invest in JPM?
+```
+
+**Response:**
+```markdown
+# Hedging Interest Rate Risk in JPM Position
+
+## Strategy 1: Pair Trade
+- **Long**: JPM
+- **Short**: Regional banks (more rate-sensitive)
+- **Result**: Captures JPM's quality premium, reduces rate exposure
+
+## Strategy 2: Options Strategy
+- **Buy**: JPM shares
+- **Sell**: Covered calls at +10% strike
+- **Buy**: Protective puts at -10% strike (collar)
+- **Result**: Defined risk range, income from calls
+
+## Strategy 3: Diversification
+- **Allocate**: 60% JPM, 40% rate-beneficiary sectors
+- **Rate-beneficiary**: Utilities, REITs
+- **Result**: Portfolio-level balance
+
+## Strategy 4: Direct Rate Hedge
+- **Instrument**: TLT (long-term treasury ETF)
+- **Ratio**: 20-30% of JPM position value
+- **Logic**: If rates fall (bad for JPM), bonds rally (offset loss)
+```
+
+<Tip>
+**Best Practice**: When analyzing risks, ask for both severity ranking AND specific mitigation strategies to make informed decisions.
+</Tip>
+
+---
+
+## Best Practices from Examples
+
+### 1. Progressive Questioning
+Start broad, then drill down:
+```
+1. Initial analysis (automatic)
+2. "What are the main risks?"
+3. "How severe is the commercial real estate risk specifically?"
+4. "What metrics indicate CRE problems are materializing?"
+```
+
+### 2. Contextual Prompts
+Provide your investment context:
+```
+"As a conservative investor with 5-year horizon, is this suitable?"
+"I'm looking for growth stocks for my Roth IRA. How does this fit?"
+"For a dividend-focused portfolio, what should I know?"
+```
+
+### 3. Comparative Analysis
+Run multiple stocks and ask comparison questions:
+```
+"Earlier you analyzed TSLA. How does this compare in terms of volatility?"
+"Is the risk/reward better here than in other EV stocks?"
+```
+
+### 4. Actionable Questions
+Ask for specific guidance:
+```
+❌ "Tell me more about this stock"
+✅ "At what price should I set a stop loss?"
+✅ "What earnings metrics would trigger a sell signal?"
+✅ "Should I buy now or wait for a pullback?"
+```
+
+### 5. Scenario Planning
+Explore different outcomes:
+```
+"What happens to this stock if rates are cut 3 times this year?"
+"How would a recession impact the forecast?"
+"What if the merger doesn't go through?"
+```
+
+## Prompt Engineering Templates
+
+### Risk Assessment
+```
+"What are the top [N] risks for [TICKER] in [timeframe]?"
+"How likely is [specific risk] to materialize?"
+"Rank risks by [severity/probability/impact on price]"
+```
+
+### Opportunity Identification
+```
+"What catalysts could drive [TICKER] higher in [timeframe]?"
+"What's the upside potential if [specific event] happens?"
+"Identify underappreciated opportunities in the analysis"
+```
+
+### Technical Analysis
+```
+"Based on the volatility of [X], what's a reasonable stop loss?"
+"Is the current price above or below fair value?"
+"What price levels represent support and resistance?"
+```
+
+### Strategic Planning
+```
+"Should I buy all at once or dollar-cost average?"
+"What position size is appropriate given the volatility?"
+"What exit strategy do you recommend?"
+```
+
+### Comparative
+```
+"How does this compare to [TICKER]?"
+"Is this a better value than sector peers?"
+"Compare the risk/reward to [broader market/sector ETF]"
+```
+
+## Common Pitfalls to Avoid
+
+<Warning>
+**Don't ask vague questions**
+
+❌ "What do you think?"
+❌ "Tell me more"
+❌ "Is this good?"
+
+✅ "What's your price target for next quarter?"
+✅ "Explain the significance of the high volatility"
+✅ "Is this stock suitable for a conservative portfolio?"
+</Warning>
+
+<Warning>
+**Don't ignore the initial analysis**
+
+Read the full initial forecast before asking follow-ups. Your questions should build on the information provided, not ignore it.
+</Warning>
+
+<Warning>
+**Don't ask multiple questions at once**
+
+❌ "What are the risks, opportunities, and best entry price?"
+
+✅ Ask one at a time for detailed, focused responses
+</Warning>
+
+## Performance Tracking Example
+
+### Weekly Screening Routine
+
+```bash
+# Monday: Screen watchlist
+python main.py  # Run for each ticker in watchlist
+
+# Track changes in:
+# - Average price trend
+# - Volatility changes
+# - New risks or opportunities
+
+# Document in spreadsheet:
+# Ticker | Avg Price | Current | Volatility | Change | Notes
+```
+
+### Sample Tracking Prompt
+```
+⤷ Enter your prompt:
+Has anything material changed since last week's average price of $180?
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Running the Screener" icon="play" href="/usage/running-screener">
+    Review the basics of running FinFram Screener
+  </Card>
+  
+  <Card title="Interactive Mode" icon="comments" href="/usage/interactive-mode">
+    Deep dive into the interactive prompt system
+  </Card>
+  
+  <Card title="API Reference" icon="code" href="/api/stock-data">
+    Understand the underlying functions and APIs
+  </Card>
+  
+  <Card title="Configuration" icon="gear" href="/configuration/settings">
+    Customize your screener settings
+  </Card>
+</CardGroup>

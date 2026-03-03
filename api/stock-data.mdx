@@ -1,0 +1,85 @@
+---
+title: "Stock Data"
+description: "Fetch historical stock price data using yfinance"
+---
+
+## get_stock_history
+
+Fetches historical stock price data for a given ticker symbol using the yfinance library.
+
+### Function Signature
+
+```python
+def get_stock_history(ticker: str, period: str = "6mo")
+```
+
+### Parameters
+
+<ParamField path="ticker" type="str" required>
+  The stock ticker symbol (e.g., "AAPL", "TSLA", "GOOGL")
+</ParamField>
+
+<ParamField path="period" type="str" default="6mo">
+  The time period for historical data. Valid periods include:
+  - "1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"
+</ParamField>
+
+### Returns
+
+<ResponseField name="history" type="pandas.DataFrame | None">
+  Returns a pandas DataFrame containing historical stock data with columns:
+  - `Open`: Opening price
+  - `High`: Highest price
+  - `Low`: Lowest price
+  - `Close`: Closing price
+  - `Volume`: Trading volume
+  
+  Returns `None` if an error occurs or no data is found.
+</ResponseField>
+
+### Example Usage
+
+```python
+from stock_data import get_stock_history
+
+# Fetch 6 months of historical data for Apple
+history = get_stock_history("AAPL")
+
+if history is not None:
+    print(f"Retrieved {len(history)} days of data")
+    print(f"Latest closing price: ${history['Close'].iloc[-1]:.2f}")
+
+# Fetch 1 year of data for Tesla
+history = get_stock_history("TSLA", period="1y")
+```
+
+### Error Handling
+
+The function handles errors gracefully:
+
+- **No data found**: If the ticker symbol is invalid or has no historical data, a `ValueError` is raised and caught
+- **Network errors**: Connection issues with Yahoo Finance are caught and reported
+- **Invalid ticker**: Returns `None` and prints an error message to the console
+
+```python
+history = get_stock_history("INVALID_TICKER")
+if history is None:
+    print("Failed to fetch stock data")
+```
+
+### Source Code
+
+```python
+import yfinance as yf
+
+def get_stock_history(ticker: str, period: str = "6mo"):
+    try:
+        stock = yf.Ticker(ticker)
+        history = stock.history(period=period)
+        if history.empty:
+            raise ValueError("No data found for ticker.")
+        return history
+    except Exception as e:
+        print(f"Error fetching data for {ticker}: {e}")
+        return None
+```

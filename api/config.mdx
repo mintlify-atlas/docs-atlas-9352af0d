@@ -1,0 +1,163 @@
+---
+title: "Configuration"
+description: "Application configuration management and environment variables"
+---
+
+## Overview
+
+The configuration module manages API keys, settings, and application configuration loaded from environment variables and JSON files.
+
+## Configuration Variables
+
+### API_KEY
+
+<ParamField path="API_KEY" type="str">
+  The Groq API key loaded from environment variables using `python-dotenv`.
+  Must be set in a `.env` file in the project root.
+</ParamField>
+
+**Environment File (`.env`):**
+```bash
+API_KEY=your_groq_api_key_here
+```
+
+### SETTINGS
+
+<ParamField path="SETTINGS" type="dict | None">
+  Application settings loaded from `settings.json` file. Contains API configuration including:
+  - `url`: API endpoint URL
+  - `model`: AI model identifier
+  - `custom-json`: Additional request parameters
+</ParamField>
+
+**Settings File (`settings.json`):**
+```json
+{
+  "url": "https://api.groq.com/openai/v1/chat/completions",
+  "model": "llama-3.1-70b-versatile",
+  "custom-json": {
+    "temperature": 0.7,
+    "max_tokens": 1000
+  }
+}
+```
+
+## Configuration Loading
+
+The module automatically loads configuration on import:
+
+1. **Environment Variables**: Uses `python-dotenv` to load `.env` file
+2. **Settings File**: Reads and parses `settings.json`
+3. **Error Handling**: Prints error message if `settings.json` is not found
+
+### Loading Process
+
+```python
+from dotenv import load_dotenv
+import json
+import os
+
+# Load .env file
+load_dotenv()
+
+# Get API key from environment
+API_KEY = os.getenv("API_KEY")
+
+# Load settings from JSON
+try:
+    with open('settings.json', 'r') as file:
+        SETTINGS = json.load(file)
+except FileNotFoundError:
+    print("Error: The file 'settings.json' was not found.")
+    SETTINGS = None
+```
+
+## Usage in Other Modules
+
+Import configuration variables as needed:
+
+```python
+from config import API_KEY, SETTINGS
+
+# Use in API requests
+headers = {
+    "Authorization": f"Bearer {API_KEY}",
+    "Content-Type": "application/json"
+}
+
+url = SETTINGS["url"]
+model = SETTINGS["model"]
+```
+
+## Required Files
+
+### .env
+
+Create a `.env` file in the project root:
+
+```bash
+# Groq API Configuration
+API_KEY=gsk_your_api_key_here
+```
+
+### settings.json
+
+Create a `settings.json` file in the project root:
+
+```json
+{
+  "url": "https://api.groq.com/openai/v1/chat/completions",
+  "model": "llama-3.1-70b-versatile",
+  "custom-json": {
+    "temperature": 0.7,
+    "max_tokens": 1000,
+    "top_p": 0.9
+  }
+}
+```
+
+## Error Handling
+
+### Missing API Key
+
+```python
+if not API_KEY:
+    print("Error: API_KEY not found in environment variables")
+    print("Please create a .env file with your API key")
+```
+
+### Missing Settings File
+
+```python
+if SETTINGS is None:
+    print("Error: settings.json not found")
+    print("Please create a settings.json file with API configuration")
+```
+
+## Source Code
+
+```python
+from dotenv import load_dotenv
+import json
+import os
+
+load_dotenv()
+
+API_KEY = os.getenv("API_KEY")
+SETTINGS = None
+
+try:
+    with open('settings.json', 'r') as file:
+        SETTINGS = json.load(file)
+    
+except FileNotFoundError:
+    print("Error: The file 'settings.json' was not found.")
+```
+
+## Dependencies
+
+This module requires:
+
+```bash
+pip install python-dotenv
+```

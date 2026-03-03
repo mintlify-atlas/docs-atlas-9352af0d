@@ -1,0 +1,214 @@
+---
+title: "Common Issues"
+description: "Solutions to common problems when using FinFram Screener"
+---
+
+## Common Issues and Solutions
+
+This page covers the most frequently encountered issues and their solutions.
+
+<AccordionGroup>
+  <Accordion title="API key not found error" icon="key">
+    **Problem**: You see an error message indicating that the API key is missing or not found.
+
+    **Cause**: The `.env` file is either missing, incorrectly named, or doesn't contain the `API_KEY` variable.
+
+    **Solution**:
+
+    1. Create a `.env` file in the root directory of the project (same location as `main.py`):
+
+    ```bash
+    touch .env
+    ```
+
+    2. Add your API key to the `.env` file:
+
+    ```env
+    API_KEY=your_api_token_here
+    ```
+
+    3. Make sure the `.env` file is in the correct location:
+
+    ```
+    finfram-screener/
+    ├── .env          ← Should be here
+    ├── settings.json
+    ├── src/
+    └── main.py
+    ```
+
+    <Tip>Never commit your `.env` file to version control. Make sure it's listed in `.gitignore`.</Tip>
+  </Accordion>
+
+  <Accordion title="Invalid ticker symbol" icon="chart-line">
+    **Problem**: The screener returns "No data found for ticker" or fails to retrieve stock data.
+
+    **Cause**: The ticker symbol is invalid, delisted, or not available in Yahoo Finance.
+
+    **Solution**:
+
+    1. Verify the ticker symbol is correct (e.g., `AAPL` for Apple Inc.)
+    2. Use uppercase letters when entering the ticker
+    3. Check if the stock is actively traded on major exchanges
+    4. Try a different, well-known ticker to test (e.g., `MSFT`, `GOOGL`, `TSLA`)
+
+    **Example error in code** (src/stock_data.py:8-11):
+
+    ```python
+    if history.empty:
+        raise ValueError("No data found for ticker.")
+    ```
+
+    <Note>FinFram Screener uses Yahoo Finance data through `yfinance`. If a stock isn't available on Yahoo Finance, it won't work with this tool.</Note>
+  </Accordion>
+
+  <Accordion title="Network/API request failures" icon="wifi">
+    **Problem**: You see errors like "API request failed" or connection timeouts.
+
+    **Cause**: Network connectivity issues, API endpoint unavailable, or invalid API credentials.
+
+    **Solution**:
+
+    1. Check your internet connection
+    2. Verify the API endpoint URL in `settings.json` is correct:
+
+    ```json
+    {
+      "url": "https://api.groq.com/openai/v1/chat/completions"
+    }
+    ```
+
+    3. Confirm your API key is valid and has sufficient credits
+    4. Check the API service status page for any outages
+    5. Test with a simple request to verify the endpoint is working
+
+    **Error handling in code** (src/groq_api.py:25-26):
+
+    ```python
+    except requests.exceptions.RequestException as e:
+        return f"❌ API request failed: {e}"
+    ```
+
+    <Warning>Rate limits may cause API failures. Check your API provider's rate limits and upgrade your plan if needed.</Warning>
+  </Accordion>
+
+  <Accordion title="settings.json not found" icon="gear">
+    **Problem**: Error message: "The file 'settings.json' was not found."
+
+    **Cause**: The `settings.json` file is missing or in the wrong location.
+
+    **Solution**:
+
+    1. Create `settings.json` in the root directory:
+
+    ```bash
+    touch settings.json
+    ```
+
+    2. Add the required configuration:
+
+    ```json
+    {
+      "model": "openai/gpt-oss-120b",
+      "url": "https://api.groq.com/openai/v1/chat/completions",
+      "custom-json": {
+        "temperature": 0.7
+      }
+    }
+    ```
+
+    3. Verify the file location:
+
+    ```
+    finfram-screener/
+    ├── settings.json  ← Should be here
+    ├── .env
+    ├── src/
+    └── main.py
+    ```
+
+    **Error handling in code** (src/config.py:14-15):
+
+    ```python
+    except FileNotFoundError:
+        print("Error: The file 'settings.json' was not found.")
+    ```
+
+    <Tip>You can copy the example from the README and customize it for your preferred AI model.</Tip>
+  </Accordion>
+
+  <Accordion title="Missing dependencies" icon="cube">
+    **Problem**: Import errors or "module not found" when running the screener.
+
+    **Cause**: Required Python packages are not installed.
+
+    **Solution**:
+
+    1. Install all dependencies using pip:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+    2. If you don't have a `requirements.txt`, install dependencies manually:
+
+    ```bash
+    pip install yfinance requests python-dotenv rich
+    ```
+
+    3. Verify installation:
+
+    ```bash
+    pip list | grep -E "yfinance|requests|dotenv|rich"
+    ```
+
+    **Required packages**:
+    - `yfinance` - Stock data retrieval
+    - `requests` - API calls
+    - `python-dotenv` - Environment variable loading
+    - `rich` - Terminal styling
+
+    <Note>Make sure you're using Python 3.7 or higher. Check with `python --version`.</Note>
+  </Accordion>
+
+  <Accordion title="Empty or malformed API response" icon="exclamation-triangle">
+    **Problem**: The AI returns empty responses or unexpected error messages.
+
+    **Cause**: Incorrect model configuration, incompatible API structure, or malformed payload.
+
+    **Solution**:
+
+    1. Verify your model name in `settings.json` matches your API provider:
+
+    ```json
+    {
+      "model": "openai/gpt-oss-120b"
+    }
+    ```
+
+    2. Check that the response structure matches the expected format (src/groq_api.py:24):
+
+    ```python
+    return data["choices"][0]["message"]["content"]
+    ```
+
+    3. Test with a simpler model first (e.g., `llama3-8b-8192` on Groq)
+    4. Review API documentation for your specific provider
+
+    <Warning>Some AI providers use different response structures. Verify the response format in your API provider's documentation.</Warning>
+  </Accordion>
+</AccordionGroup>
+
+## Still Having Issues?
+
+If you're experiencing problems not covered here:
+
+1. Check the [FAQ](/troubleshooting/faq) for additional questions
+2. Review the error message carefully and trace it back to the source code
+3. Verify all configuration files are properly formatted (JSON syntax)
+4. Test with minimal configuration to isolate the issue
+5. Check API provider status pages for service disruptions
+
+<Card title="Configuration Guide" icon="sliders" href="/configuration/settings">
+  Learn how to properly configure FinFram Screener
+</Card>

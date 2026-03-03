@@ -1,0 +1,83 @@
+---
+title: Installation
+description: Install FinFram Screener and its dependencies
+---
+
+# Installation
+
+Get FinFram Screener up and running in just a few steps.
+
+## Prerequisites
+
+Before installing FinFram Screener, ensure you have:
+
+- **Python 3.x** installed on your system
+- **pip** package manager (comes with Python)
+- **Git** for cloning the repository
+
+<Note>
+  Python 3.7 or higher is recommended for full compatibility with all dependencies.
+</Note>
+
+## Installation Steps
+
+<Steps>
+  <Step title="Clone the repository">
+    Clone the FinFram Screener repository from GitHub:
+    
+    ```bash
+    git clone https://github.com/Aeria-Corporation/FinFram-Screener
+    cd FinFram-Screener
+    ```
+  </Step>
+  
+  <Step title="Install dependencies">
+    Install all required Python packages using pip:
+    
+    ```bash
+    pip install -r requirements.txt
+    ```
+    
+    This will install the following dependencies:
+    
+    <CodeGroup>
+    ```txt requirements.txt
+    python-dotenv==1.1.1
+    Requests==2.32.5
+    rich==14.1.0
+    yfinance==0.2.66
+    ```
+    </CodeGroup>
+    
+    **Dependency Overview:**
+    - **python-dotenv** - Loads environment variables from .env file
+    - **Requests** - HTTP library for API calls
+    - **rich** - Terminal styling and formatting
+    - **yfinance** - Fetches historical stock data from Yahoo Finance
+  </Step>
+  
+  <Step title="Verify installation">
+    Verify that all packages were installed correctly:
+    
+    ```bash
+    python -c "import yfinance, rich, dotenv, requests; print('All dependencies installed successfully!')"
+    ```
+    
+    If you see the success message, you're ready to proceed to configuration!
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Configure and run your first analysis
+  </Card>
+  <Card title="Configuration" icon="gear" href="/configuration/settings">
+    Customize AI model settings
+  </Card>
+</CardGroup>
+
+<Warning>
+  Make sure to configure your API credentials before running the screener. See the [Quick Start](/quickstart) guide for details.
+</Warning>

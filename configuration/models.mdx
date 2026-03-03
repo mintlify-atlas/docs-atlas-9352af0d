@@ -1,0 +1,368 @@
+---
+title: AI Model Configuration
+description: Configure and switch between different AI models in FinFram Screener
+---
+
+## Overview
+
+FinFram Screener supports any AI model that provides an OpenAI-compatible chat completions API. This includes models from Groq, Together.ai, OpenAI, and other compatible providers.
+
+## Supported Models
+
+<CardGroup cols={2}>
+  <Card title="Groq" icon="bolt">
+    Fast inference with open-source models
+    - GPT OSS 120B
+    - Llama models
+    - Mixtral models
+  </Card>
+  
+  <Card title="Together.ai" icon="layer-group">
+    Wide selection of open-source models
+    - Meta Llama 3.1
+    - Mixtral 8x7B
+    - Qwen models
+  </Card>
+  
+  <Card title="OpenAI" icon="openai">
+    Official OpenAI models
+    - GPT-4
+    - GPT-3.5 Turbo
+    - GPT-4 Turbo
+  </Card>
+  
+  <Card title="Custom" icon="server">
+    Any OpenAI-compatible API
+    - Local models (LM Studio)
+    - Self-hosted endpoints
+    - Other providers
+  </Card>
+</CardGroup>
+
+## API Compatibility Requirements
+
+<Warning>
+  **OpenAI-Compatible API Required**
+  
+  Models must support the OpenAI chat completions format. Some models like ChatGPT or Gemini might not work if their API structure differs.
+</Warning>
+
+Your API endpoint must:
+
+<Steps>
+  <Step title="Accept standard request format">
+    ```json
+    {
+      "model": "model-name",
+      "messages": [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "User message"}
+      ]
+    }
+    ```
+  </Step>
+  
+  <Step title="Return standard response format">
+    ```json
+    {
+      "choices": [
+        {
+          "message": {
+            "content": "Assistant response"
+          }
+        }
+      ]
+    }
+    ```
+  </Step>
+  
+  <Step title="Support Bearer token authentication">
+    ```
+    Authorization: Bearer YOUR_API_KEY
+    ```
+  </Step>
+</Steps>
+
+## Model Configuration
+
+Models are configured in `settings.json` with three components:
+
+1. **Model identifier** - The specific model to use
+2. **API endpoint** - The provider's chat completions URL
+3. **Custom parameters** - Model-specific settings
+
+### Configuration Examples
+
+<Tabs>
+  <Tab title="Groq - Fast Inference">
+    ```json settings.json
+    {
+        "model": "openai/gpt-oss-120b",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "custom-json": {
+            "temperature": 0.7,
+            "max_tokens": 1024
+        }
+    }
+    ```
+    
+    <Info>
+      Groq provides extremely fast inference speeds, ideal for real-time stock analysis.
+    </Info>
+  </Tab>
+  
+  <Tab title="Together.ai - Llama 3.1">
+    ```json settings.json
+    {
+        "model": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+        "url": "https://api.together.xyz/v1/chat/completions",
+        "custom-json": {
+            "temperature": 0.5,
+            "max_tokens": 2048,
+            "top_p": 0.9
+        }
+    }
+    ```
+    
+    <Info>
+      Meta's Llama 3.1 provides excellent reasoning capabilities for financial analysis.
+    </Info>
+  </Tab>
+  
+  <Tab title="Together.ai - Mixtral">
+    ```json settings.json
+    {
+        "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+        "url": "https://api.together.xyz/v1/chat/completions",
+        "custom-json": {
+            "temperature": 0.6,
+            "max_tokens": 3000
+        }
+    }
+    ```
+    
+    <Info>
+      Mixtral excels at structured analysis and following complex instructions.
+    </Info>
+  </Tab>
+  
+  <Tab title="OpenAI - GPT-4">
+    ```json settings.json
+    {
+        "model": "gpt-4",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "custom-json": {
+            "temperature": 0.3,
+            "max_tokens": 2000,
+            "frequency_penalty": 0.5
+        }
+    }
+    ```
+    
+    <Note>
+      GPT-4 offers superior reasoning but at a higher cost per request.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Model Parameters
+
+The `custom-json` field allows you to configure model-specific parameters. These are merged with the base request payload in `src/groq_api.py:21`:
+
+```python src/groq_api.py
+response = requests.post(url, headers=headers, json=payload | SETTINGS["custom-json"])
+```
+
+### Common Parameters
+
+<ParamField path="temperature" type="float" default="0.7">
+  Controls randomness in responses (0.0 - 2.0)
+  
+  - **Lower values (0.1-0.3)**: More focused and deterministic
+  - **Medium values (0.5-0.7)**: Balanced creativity and consistency
+  - **Higher values (0.8-1.0)**: More creative and varied
+  
+  <Info>
+    For financial analysis, use lower temperatures (0.3-0.5) for more consistent, fact-based responses.
+  </Info>
+</ParamField>
+
+<ParamField path="max_tokens" type="integer" default="varies">
+  Maximum length of the generated response
+  
+  - **512-1024**: Short summaries and quick insights
+  - **1024-2048**: Detailed analysis
+  - **2048-4096**: Comprehensive reports
+  
+  <Warning>
+    Higher token limits increase API costs. Adjust based on your needs.
+  </Warning>
+</ParamField>
+
+<ParamField path="top_p" type="float" default="1.0">
+  Nucleus sampling parameter (0.0 - 1.0)
+  
+  Controls diversity by considering tokens with cumulative probability `top_p`.
+  
+  - **0.1**: Very focused, deterministic
+  - **0.9**: Balanced
+  - **1.0**: Maximum diversity
+</ParamField>
+
+<ParamField path="frequency_penalty" type="float" default="0.0">
+  Reduces repetition of tokens (-2.0 to 2.0)
+  
+  - **Positive values**: Penalize repeated phrases
+  - **0.0**: No penalty
+  - **Negative values**: Encourage repetition
+</ParamField>
+
+<ParamField path="presence_penalty" type="float" default="0.0">
+  Encourages new topics (-2.0 to 2.0)
+  
+  - **Positive values**: Encourage new topics
+  - **0.0**: No penalty
+  - **Negative values**: Encourage staying on topic
+</ParamField>
+
+## Switching Between Models
+
+To switch between different models or providers:
+
+<Steps>
+  <Step title="Update settings.json">
+    Modify the `model` and `url` fields in `settings.json`:
+    
+    ```json settings.json
+    {
+        "model": "new-model-identifier",
+        "url": "https://new-provider.com/v1/chat/completions",
+        "custom-json": {
+            "temperature": 0.7
+        }
+    }
+    ```
+  </Step>
+  
+  <Step title="Update API key if needed">
+    If switching providers, update your `.env` file with the new API key:
+    
+    ```env .env
+    API_KEY=new_provider_api_key
+    ```
+  </Step>
+  
+  <Step title="Test the configuration">
+    Run the screener to verify the new model works:
+    
+    ```bash
+    python main.py
+    ```
+  </Step>
+</Steps>
+
+<Note>
+  No code changes are required to switch models - just update `settings.json` and optionally `.env`.
+</Note>
+
+## Model Selection Guidelines
+
+### For Financial Analysis
+
+<AccordionGroup>
+  <Accordion title="Best for accuracy and depth">
+    **Recommended models:**
+    - OpenAI GPT-4 (most accurate, higher cost)
+    - Meta Llama 3.1 70B (good balance)
+    - Mixtral 8x7B (structured reasoning)
+    
+    **Settings:**
+    ```json
+    "custom-json": {
+        "temperature": 0.3,
+        "max_tokens": 2048,
+        "top_p": 0.9
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Best for speed">
+    **Recommended models:**
+    - Groq GPT OSS 120B
+    - Groq Llama 3 models
+    
+    **Settings:**
+    ```json
+    "custom-json": {
+        "temperature": 0.5,
+        "max_tokens": 1024
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Best for cost-effectiveness">
+    **Recommended models:**
+    - Together.ai Llama 3.1 8B
+    - Groq open-source models
+    
+    **Settings:**
+    ```json
+    "custom-json": {
+        "temperature": 0.5,
+        "max_tokens": 1500
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Model not found error">
+    **Cause:** Model identifier doesn't match the provider's format.
+    
+    **Solution:**
+    - Check the provider's documentation for exact model names
+    - Verify the model is available in your region/tier
+    - Groq models often use `openai/` prefix
+    - Together.ai models use full paths like `meta-llama/...`
+  </Accordion>
+  
+  <Accordion title="Invalid parameter errors">
+    **Cause:** The model doesn't support a parameter in `custom-json`.
+    
+    **Solution:**
+    - Remove unsupported parameters from `custom-json`
+    - Check the provider's documentation for supported parameters
+    - Start with minimal config (only `temperature`)
+  </Accordion>
+  
+  <Accordion title="Response format errors">
+    **Cause:** API doesn't follow OpenAI format.
+    
+    **Solution:**
+    - Verify the endpoint returns `{"choices": [{"message": {"content": "..."}}]}`
+    - Test with a simple curl request first
+    - Check if the provider offers an OpenAI-compatible endpoint
+  </Accordion>
+  
+  <Accordion title="Slow or timeout errors">
+    **Cause:** Model is too large or provider is slow.
+    
+    **Solution:**
+    - Reduce `max_tokens` to get faster responses
+    - Switch to a smaller/faster model
+    - Use Groq for fastest inference
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Settings" icon="gear" href="/configuration/settings">
+    Learn about settings.json structure
+  </Card>
+  <Card title="API Keys" icon="key" href="/configuration/api-keys">
+    Configure API authentication
+  </Card>
+</CardGroup>

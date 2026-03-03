@@ -1,0 +1,330 @@
+---
+title: Interactive Mode
+description: Ask follow-up questions and get deeper insights after the initial forecast
+icon: comments
+---
+
+## Overview
+
+After the initial stock analysis, FinFram Screener automatically enters **Interactive Mode**, allowing you to ask unlimited follow-up questions about the stock without re-running the analysis.
+
+## How Interactive Mode Works
+
+Once the initial forecast is displayed, you'll see this prompt:
+
+```
+⤷ Enter your prompt:
+```
+
+The system is now waiting for your input. You can:
+- Ask specific questions about the analysis
+- Request deeper insights on particular metrics
+- Compare scenarios
+- Explore risks and opportunities in detail
+
+## Implementation Details
+
+Interactive mode is powered by a continuous loop in the main application:
+
+**Source:** `main.py:18-22`
+```python
+while True:
+    console.print("⤷ Enter your prompt:", style="bold red")
+    prompt = input()
+    result = query_api(prompt)
+    display_result(result)
+```
+
+<Info>
+The loop runs indefinitely, allowing unlimited follow-up questions. Each response is formatted and displayed using Rich markdown rendering.
+</Info>
+
+## Example Prompts to Try
+
+### Understanding Risks
+
+<AccordionGroup>
+  <Accordion title="Identify Specific Risks">
+    ```
+    What are the top 3 risks for this stock in the next quarter?
+    ```
+    
+    This prompts a focused analysis on potential downsides.
+  </Accordion>
+  
+  <Accordion title="Assess Market Volatility">
+    ```
+    Is the volatility level concerning? How does it compare to industry peers?
+    ```
+    
+    Gets context on whether the volatility is normal for the sector.
+  </Accordion>
+  
+  <Accordion title="Geopolitical Impact">
+    ```
+    How might current geopolitical tensions affect this stock?
+    ```
+    
+    Explores external risk factors beyond the numbers.
+  </Accordion>
+</AccordionGroup>
+
+### Exploring Opportunities
+
+<AccordionGroup>
+  <Accordion title="Growth Catalysts">
+    ```
+    What are the key growth drivers for this company?
+    ```
+    
+    Identifies positive factors that could boost the stock.
+  </Accordion>
+  
+  <Accordion title="Entry Points">
+    ```
+    Based on the data, what would be a good entry price?
+    ```
+    
+    Gets guidance on optimal buying opportunities.
+  </Accordion>
+  
+  <Accordion title="Long-term Potential">
+    ```
+    Is this stock suitable for a long-term investment strategy?
+    ```
+    
+    Assesses the stock's viability for extended holding periods.
+  </Accordion>
+</AccordionGroup>
+
+### Technical Analysis
+
+<AccordionGroup>
+  <Accordion title="Price Trends">
+    ```
+    Explain the price trend over the last 6 months. Is it bullish or bearish?
+    ```
+    
+    Gets a technical perspective on price movements.
+  </Accordion>
+  
+  <Accordion title="Support and Resistance">
+    ```
+    Based on the average and latest prices, what are likely support and resistance levels?
+    ```
+    
+    Identifies key price levels for trading decisions.
+  </Accordion>
+  
+  <Accordion title="Volatility Analysis">
+    ```
+    Break down what the volatility number means for short-term traders.
+    ```
+    
+    Translates statistical data into actionable insights.
+  </Accordion>
+</AccordionGroup>
+
+### Comparative Analysis
+
+<AccordionGroup>
+  <Accordion title="Sector Comparison">
+    ```
+    How does this stock compare to other tech stocks right now?
+    ```
+    
+    Provides competitive context within the industry.
+  </Accordion>
+  
+  <Accordion title="Alternative Investments">
+    ```
+    Are there similar stocks with better risk/reward profiles?
+    ```
+    
+    Explores alternative investment options.
+  </Accordion>
+</AccordionGroup>
+
+### Strategic Questions
+
+<AccordionGroup>
+  <Accordion title="Portfolio Fit">
+    ```
+    Would this stock be a good addition to a diversified portfolio?
+    ```
+    
+    Assesses how the stock fits into broader investment strategies.
+  </Accordion>
+  
+  <Accordion title="Risk Mitigation">
+    ```
+    What strategies can I use to mitigate the identified risks?
+    ```
+    
+    Gets practical advice on risk management.
+  </Accordion>
+  
+  <Accordion title="Exit Strategy">
+    ```
+    What conditions should trigger selling this stock?
+    ```
+    
+    Helps plan exit strategies in advance.
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices for Effective Prompts
+
+<CardGroup cols={2}>
+  <Card title="Be Specific" icon="bullseye">
+    Instead of "Tell me more," ask "What specific earnings metrics should I watch?"
+  </Card>
+  
+  <Card title="Ask One Thing" icon="1">
+    Focus each prompt on a single topic for clearer, more detailed responses.
+  </Card>
+  
+  <Card title="Reference the Data" icon="table">
+    Mention specific metrics from the analysis (e.g., "The volatility of 8.45 seems high...")
+  </Card>
+  
+  <Card title="Think Scenarios" icon="route">
+    Ask "what if" questions to explore different market conditions.
+  </Card>
+</CardGroup>
+
+## Prompt Engineering Tips
+
+### Use Action Verbs
+```
+✅ "Explain the significance of the price volatility"
+✅ "Compare this stock to its competitors"
+✅ "Identify potential catalysts for growth"
+```
+
+### Provide Context
+```
+✅ "As a risk-averse investor, should I be concerned about the volatility?"
+✅ "For a 5-year investment horizon, what are the key considerations?"
+```
+
+### Ask for Formats
+```
+✅ "List the top 5 risks in order of severity"
+✅ "Summarize the investment thesis in 3 bullet points"
+```
+
+## How to Exit Interactive Mode
+
+To exit the interactive mode and end the screener session:
+
+<Steps>
+  <Step title="Keyboard Interrupt">
+    Press `Ctrl+C` (or `Cmd+C` on Mac) in the terminal.
+    
+    This sends a keyboard interrupt signal that terminates the Python process.
+  </Step>
+  
+  <Step title="Close Terminal">
+    Alternatively, simply close the terminal window to end the session.
+  </Step>
+</Steps>
+
+<Warning>
+There is no "exit" command built into the application. You must use keyboard interrupt to stop the program.
+</Warning>
+
+## Understanding the Response Flow
+
+Each time you enter a prompt:
+
+<Steps>
+  <Step title="Prompt Submission">
+    Your question is captured via `input()` and sent to the AI.
+  </Step>
+  
+  <Step title="API Processing">
+    The `query_api()` function sends your prompt to Groq's API with the configured model.
+    
+    **Source:** `groq_api.py:10-26`
+  </Step>
+  
+  <Step title="Response Display">
+    The AI's response is rendered in markdown format with syntax highlighting.
+    
+    **Source:** `utils.py:4-7`
+  </Step>
+  
+  <Step title="Next Prompt">
+    The loop continues, ready for your next question.
+  </Step>
+</Steps>
+
+## Example Interactive Session
+
+```
+📊 Welcome to FinFram Screener
+Enter stock ticker (e.g., AAPL): TSLA
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          FinFram Screener Forecast
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Initial analysis displayed here...]
+
+⤷ Enter your prompt:
+What are the main risks for TSLA in Q2?
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          FinFram Screener Forecast
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Risk analysis displayed...]
+
+⤷ Enter your prompt:
+How does the volatility compare to other EV companies?
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          FinFram Screener Forecast
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Comparative analysis displayed...]
+
+⤷ Enter your prompt:
+^C
+```
+
+## Technical Notes
+
+### Session Persistence
+<Info>
+Each follow-up question is sent independently to the API. The system does not maintain conversation history across prompts within the same session.
+</Info>
+
+If you need context from previous responses, include that information in your new prompt:
+
+```
+You mentioned high volatility earlier. What timeframe shows this best?
+```
+
+### API Call Efficiency
+
+Every prompt in interactive mode triggers a new API call:
+- **Initial analysis**: 1 API call
+- **Each follow-up**: 1 additional API call
+
+<Warning>
+Be mindful of API rate limits if asking many questions in quick succession.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="View Examples" icon="book" href="/usage/examples">
+    See real-world examples of complete analysis sessions
+  </Card>
+  
+  <Card title="API Reference" icon="code" href="/api/stock-data">
+    Learn about the underlying API calls and functions
+  </Card>
+</CardGroup>

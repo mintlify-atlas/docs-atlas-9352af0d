@@ -1,0 +1,300 @@
+---
+title: "FAQ"
+description: "Frequently asked questions about FinFram Screener"
+---
+
+## Frequently Asked Questions
+
+Find answers to common questions about using FinFram Screener.
+
+<AccordionGroup>
+  <Accordion title="Which AI models are supported?" icon="brain">
+    FinFram Screener supports any AI model that uses an **OpenAI-compatible API** structure. This includes:
+
+    **Officially tested providers**:
+    - **Groq** - Fast inference with models like:
+      - `llama3-8b-8192`
+      - `llama3-70b-8192`
+      - `mixtral-8x7b-32768`
+    - **Together.ai** - Wide model selection including:
+      - `openai/gpt-oss-120b`
+      - Mixtral models
+      - LLaMA models
+    - **OpenAI** - GPT models (requires OpenAI API key)
+
+    **Configuration example** (settings.json):
+
+    ```json
+    {
+      "model": "llama3-70b-8192",
+      "url": "https://api.groq.com/openai/v1/chat/completions",
+      "custom-json": {
+        "temperature": 0.7,
+        "max_tokens": 1024
+      }
+    }
+    ```
+
+    <Tip>Start with Groq's free tier - it offers fast inference and generous rate limits for testing.</Tip>
+  </Accordion>
+
+  <Accordion title="Can I use ChatGPT or Gemini?" icon="message-question">
+    **Short answer**: It depends on API compatibility.
+
+    **ChatGPT (OpenAI)**:
+    - ✅ **Yes**, OpenAI's GPT models work perfectly
+    - Use the official OpenAI endpoint:
+
+    ```json
+    {
+      "model": "gpt-4",
+      "url": "https://api.openai.com/v1/chat/completions",
+      "custom-json": {
+        "temperature": 0.7
+      }
+    }
+    ```
+
+    - Set your OpenAI API key in `.env`:
+
+    ```env
+    API_KEY=sk-your-openai-api-key
+    ```
+
+    **Google Gemini**:
+    - ❌ **No**, Gemini uses a different API structure
+    - Gemini's API is not OpenAI-compatible out of the box
+    - You would need to modify the code in `src/groq_api.py` to support Gemini's format
+
+    <Note>
+      The README notes: "Some AI models (like ChatGPT or Gemini) might not work since their API structure differs." This refers specifically to API compatibility, not model capability.
+    </Note>
+
+    **Alternative for Gemini**:
+    - Use a proxy service that converts OpenAI API calls to Gemini
+    - Or modify the request/response handling in the codebase
+  </Accordion>
+
+  <Accordion title="How do I change the analysis period?" icon="calendar">
+    By default, FinFram Screener analyzes **6 months** of stock data. You can customize this period.
+
+    **Method 1: Modify the default in code**
+
+    Edit `src/stock_data.py` (line 3):
+
+    ```python
+    def get_stock_history(ticker: str, period: str = "1y"):
+    ```
+
+    **Available periods**:
+    - `1d` - 1 day
+    - `5d` - 5 days
+    - `1mo` - 1 month
+    - `3mo` - 3 months
+    - `6mo` - 6 months (default)
+    - `1y` - 1 year
+    - `2y` - 2 years
+    - `5y` - 5 years
+    - `10y` - 10 years
+    - `ytd` - Year to date
+    - `max` - All available data
+
+    **Method 2: Add a command-line argument**
+
+    Modify `src/main.py` to accept a period parameter:
+
+    ```python
+    def main():
+        console = Console()
+        print("📊 Welcome to FinFram Screener")
+        ticker = input("Enter stock ticker (e.g., AAPL): ").upper()
+        period = input("Enter period (default 6mo): ") or "6mo"
+        history = get_stock_history(ticker, period)
+    ```
+
+    <Warning>Longer periods may result in larger prompts and higher API costs. Start with shorter periods for testing.</Warning>
+  </Accordion>
+
+  <Accordion title="How do I customize the prompt template?" icon="pen-to-square">
+    The prompt template is built in `src/prompt_builder.py`. This file creates the structured prompt sent to the AI model.
+
+    **To customize the prompt**:
+
+    1. Open `src/prompt_builder.py`
+    2. Modify the `build_prompt()` function to include:
+       - Different financial metrics
+       - Custom analysis instructions
+       - Specific output formats
+       - Additional context or constraints
+
+    **Example customization**:
+
+    ```python
+    def build_prompt(ticker: str, history):
+        avg_price = history['Close'].mean()
+        volatility = history['Close'].std()
+        latest_close = history['Close'].iloc[-1]
+        
+        prompt = f"""
+        Analyze {ticker} stock with the following data:
+        - Average Price (6mo): ${avg_price:.2f}
+        - Volatility (std dev): ${volatility:.2f}
+        - Latest Close: ${latest_close:.2f}
+        
+        Provide:
+        1. Technical analysis
+        2. Risk assessment
+        3. Price target for next quarter
+        4. Key catalysts to watch
+        
+        Keep response under 300 words.
+        """
+        return prompt
+    ```
+
+    <Tip>Test your custom prompts with different stocks to ensure consistent, useful responses.</Tip>
+  </Accordion>
+
+  <Accordion title="What are the rate limits and API costs?" icon="gauge">
+    Rate limits and costs depend entirely on your **AI API provider**.
+
+    **Common provider limits**:
+
+    | Provider | Free Tier | Rate Limit | Cost |
+    |----------|-----------|------------|------|
+    | **Groq** | ✅ Yes | ~30 req/min | Free (limited) |
+    | **Together.ai** | ✅ Trial credits | Varies by model | Pay-as-you-go |
+    | **OpenAI** | ❌ No | Varies by tier | $0.002-0.06 per 1K tokens |
+
+    **Factors affecting cost**:
+    - Model size (larger models cost more)
+    - Prompt length (longer stock histories = more tokens)
+    - Number of queries per session
+    - Follow-up questions (src/main.py:18-22)
+
+    **Cost optimization tips**:
+
+    1. Use smaller, efficient models for basic analysis
+    2. Reduce the analysis period (less data = shorter prompts)
+    3. Limit follow-up questions
+    4. Use provider rate limiting to avoid overages
+
+    ```json
+    {
+      "custom-json": {
+        "temperature": 0.7,
+        "max_tokens": 500
+      }
+    }
+    ```
+
+    <Note>Check your API provider's pricing page and dashboard for real-time usage and costs.</Note>
+  </Accordion>
+
+  <Accordion title="Can I analyze multiple stocks at once?" icon="layer-group">
+    Currently, FinFram Screener analyzes **one stock at a time** in an interactive session.
+
+    **Current workflow** (src/main.py:7-24):
+    1. Enter a ticker symbol
+    2. Get AI analysis
+    3. Ask follow-up questions
+    4. Restart for a new stock
+
+    **To analyze multiple stocks**:
+
+    You can modify the code to loop through multiple tickers:
+
+    ```python
+    def main():
+        console = Console()
+        print("📊 Welcome to FinFram Screener")
+        
+        tickers_input = input("Enter stock tickers (comma-separated): ")
+        tickers = [t.strip().upper() for t in tickers_input.split(',')]
+        
+        for ticker in tickers:
+            print(f"\nAnalyzing {ticker}...")
+            history = get_stock_history(ticker)
+            if history is not None:
+                finance = build_prompt(ticker, history)
+                result = query_api(finance)
+                display_result(result)
+                print("\n" + "="*50 + "\n")
+    ```
+
+    <Warning>Analyzing multiple stocks will consume more API tokens and may hit rate limits.</Warning>
+  </Accordion>
+
+  <Accordion title="How do I save or export analysis results?" icon="download">
+    By default, FinFram Screener displays results in the terminal without saving them.
+
+    **To save results to a file**:
+
+    Modify `src/utils.py` or `src/main.py` to write outputs:
+
+    ```python
+    import json
+    from datetime import datetime
+
+    def save_result(ticker: str, result: str):
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{ticker}_{timestamp}.txt"
+        
+        with open(filename, 'w') as f:
+            f.write(f"Analysis for {ticker}\n")
+            f.write(f"Generated: {timestamp}\n\n")
+            f.write(result)
+        
+        print(f"✅ Saved to {filename}")
+    ```
+
+    Then call it after getting the result:
+
+    ```python
+    result = query_api(finance)
+    display_result(result)
+    save_result(ticker, result)
+    ```
+
+    **Export formats you can add**:
+    - Plain text (`.txt`)
+    - Markdown (`.md`)
+    - JSON (`.json`)
+    - PDF (requires additional libraries)
+
+    <Tip>Consider adding a `--output` flag to specify the save location and format.</Tip>
+  </Accordion>
+
+  <Accordion title="Is historical data free?" icon="database">
+    **Yes**, historical stock data from Yahoo Finance (via `yfinance`) is **completely free**.
+
+    **What's included**:
+    - Price data (Open, High, Low, Close)
+    - Volume data
+    - Historical periods up to maximum available
+    - No API key required for `yfinance`
+
+    **Limitations**:
+    - Data is delayed (not real-time for most stocks)
+    - Limited to stocks available on Yahoo Finance
+    - Occasional rate limiting during heavy usage
+
+    **Costs are only for**:
+    - AI model API calls (Groq, Together.ai, OpenAI, etc.)
+    - No cost for retrieving stock data itself
+
+    <Note>The API key in your `.env` file is only for the AI model, not for stock data.</Note>
+  </Accordion>
+</AccordionGroup>
+
+## Additional Resources
+
+<CardGroup cols={2}>
+  <Card title="Common Issues" icon="wrench" href="/troubleshooting/common-issues">
+    Solutions to frequent problems and errors
+  </Card>
+
+  <Card title="Configuration" icon="gear" href="/configuration/settings">
+    Learn how to configure your AI model and settings
+  </Card>
+</CardGroup>

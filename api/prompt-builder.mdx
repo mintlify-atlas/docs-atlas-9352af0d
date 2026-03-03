@@ -1,0 +1,103 @@
+---
+title: "Prompt Builder"
+description: "Build structured prompts for financial analysis using stock data"
+---
+
+## build_prompt
+
+Constructs a structured prompt for AI-powered financial analysis by computing key metrics from historical stock data.
+
+### Function Signature
+
+```python
+def build_prompt(ticker: str, history_df)
+```
+
+### Parameters
+
+<ParamField path="ticker" type="str" required>
+  The stock ticker symbol being analyzed (e.g., "AAPL", "TSLA")
+</ParamField>
+
+<ParamField path="history_df" type="pandas.DataFrame" required>
+  Historical stock data DataFrame containing at least a 'Close' column.
+  Typically obtained from `get_stock_history()`.
+</ParamField>
+
+### Returns
+
+<ResponseField name="prompt" type="str">
+  A formatted prompt string containing:
+  - Average closing price over the period
+  - Latest closing price
+  - Volatility (standard deviation of closing prices)
+  - Instructions for financial analysis
+</ResponseField>
+
+### Computed Metrics
+
+The function calculates three key metrics from the historical data:
+
+1. **Average Price**: Mean of all closing prices over the period
+2. **Latest Price**: Most recent closing price
+3. **Volatility**: Standard deviation of closing prices (measure of price fluctuation)
+
+### Prompt Template
+
+The function generates a prompt following this structure:
+
+```text
+You are a financial analyst. Analyze the stock {ticker} based on the following data:
+- Average closing price over the last 6 months: {avg_price:.2f}
+- Latest closing price: {latest_price:.2f}
+- Volatility (standard deviation): {volatility:.2f}
+
+Consider macroeconomic trends, recent earnings, and geopolitical risks. 
+Forecast the next quarter's performance and highlight any red flags or opportunities.
+```
+
+### Example Usage
+
+```python
+from stock_data import get_stock_history
+from prompt_builder import build_prompt
+
+# Fetch historical data
+history = get_stock_history("AAPL")
+
+if history is not None:
+    # Build analysis prompt
+    prompt = build_prompt("AAPL", history)
+    print(prompt)
+```
+
+### Example Output
+
+```text
+You are a financial analyst. Analyze the stock AAPL based on the following data:
+- Average closing price over the last 6 months: 178.45
+- Latest closing price: 182.30
+- Volatility (standard deviation): 12.67
+
+Consider macroeconomic trends, recent earnings, and geopolitical risks.
+Forecast the next quarter's performance and highlight any red flags or opportunities.
+```
+
+### Source Code
+
+```python
+def build_prompt(ticker: str, history_df):
+    avg_price = history_df['Close'].mean()
+    latest_price = history_df['Close'].iloc[-1]
+    volatility = history_df['Close'].std()
+
+    prompt = f"""
+    You are a financial analyst. Analyze the stock {ticker} based on the following data:
+    - Average closing price over the last 6 months: {avg_price:.2f}
+    - Latest closing price: {latest_price:.2f}
+    - Volatility (standard deviation): {volatility:.2f}
+
+    Consider macroeconomic trends, recent earnings, and geopolitical risks. Forecast the next quarter's performance and highlight any red flags or opportunities.
+    """
+    return prompt
+```

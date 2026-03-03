@@ -1,0 +1,155 @@
+---
+title: Settings Configuration
+description: Configure FinFram Screener using settings.json
+---
+
+## Overview
+
+FinFram Screener uses a `settings.json` file to configure AI model settings, API endpoints, and custom parameters. This file is located in the root directory of the project.
+
+## Settings Structure
+
+The `settings.json` file contains three main fields:
+
+```json settings.json
+{
+    "model": "openai/gpt-oss-120b",
+    "url": "https://api.groq.com/openai/v1/chat/completions",
+    "custom-json": {
+        "temperature": 0.7
+    }
+}
+```
+
+### Configuration Fields
+
+<ParamField path="model" type="string" required>
+  The model identifier to use for API requests. Format varies by provider.
+  
+  **Examples:**
+  - `"openai/gpt-oss-120b"` (Groq)
+  - `"meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"` (Together.ai)
+</ParamField>
+
+<ParamField path="url" type="string" required>
+  The complete API endpoint URL for chat completions. Must be OpenAI-compatible.
+  
+  **Examples:**
+  - `"https://api.groq.com/openai/v1/chat/completions"` (Groq)
+  - `"https://api.together.xyz/v1/chat/completions"` (Together.ai)
+</ParamField>
+
+<ParamField path="custom-json" type="object" required>
+  Additional parameters to merge with the API request payload. Common parameters include:
+  
+  - `temperature`: Controls randomness (0.0 - 2.0)
+  - `max_tokens`: Maximum response length
+  - `top_p`: Nucleus sampling parameter
+  - `frequency_penalty`: Reduces repetition
+</ParamField>
+
+## Provider Examples
+
+<Tabs>
+  <Tab title="Groq">
+    ```json settings.json
+    {
+        "model": "openai/gpt-oss-120b",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "custom-json": {
+            "temperature": 0.7,
+            "max_tokens": 1024
+        }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Together.ai">
+    ```json settings.json
+    {
+        "model": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+        "url": "https://api.together.xyz/v1/chat/completions",
+        "custom-json": {
+            "temperature": 0.7,
+            "max_tokens": 2048
+        }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="OpenAI Compatible">
+    ```json settings.json
+    {
+        "model": "gpt-4",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "custom-json": {
+            "temperature": 0.5,
+            "top_p": 0.9
+        }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## How It Works
+
+The configuration is loaded at runtime in `src/config.py:11-12`:
+
+```python src/config.py
+with open('settings.json', 'r') as file:
+    SETTINGS = json.load(file)
+```
+
+The settings are then used in API requests (`src/groq_api.py:4-21`):
+
+```python src/groq_api.py
+url = SETTINGS["url"]
+
+payload = {
+    "model": SETTINGS["model"],
+    "messages": [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": prompt}
+    ]
+}
+
+# Merge custom-json parameters
+response = requests.post(url, headers=headers, json=payload | SETTINGS["custom-json"])
+```
+
+<Warning>
+  **OpenAI-Compatible API Required**
+  
+  FinFram Screener requires APIs that follow the OpenAI chat completions format. Some models like ChatGPT or Gemini might not work if their API structure differs from the OpenAI standard.
+  
+  The API must:
+  - Accept `model` and `messages` fields
+  - Return responses in the format: `{"choices": [{"message": {"content": "..."}}]}`
+</Warning>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="FileNotFoundError: settings.json not found">
+    Make sure `settings.json` is in the root directory of the project (same level as `main.py`). The file is loaded relative to the working directory.
+  </Accordion>
+  
+  <Accordion title="API request fails with 400/422 errors">
+    Check that your `custom-json` parameters are supported by your chosen model. Different providers support different parameters.
+  </Accordion>
+  
+  <Accordion title="Model not found errors">
+    Verify the model name matches your provider's exact format. Model identifiers vary between providers (e.g., Groq uses `openai/` prefix).
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Keys" icon="key" href="/configuration/api-keys">
+    Configure your API authentication
+  </Card>
+  <Card title="Models" icon="brain" href="/configuration/models">
+    Learn about supported AI models
+  </Card>
+</CardGroup>

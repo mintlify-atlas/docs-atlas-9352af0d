@@ -1,0 +1,227 @@
+---
+title: API Key Configuration
+description: Set up authentication for AI providers in FinFram Screener
+---
+
+## Overview
+
+FinFram Screener requires an API key to authenticate with your chosen AI provider. API keys are stored securely in a `.env` file and loaded at runtime.
+
+## Creating the .env File
+
+<Steps>
+  <Step title="Create .env file">
+    In the root directory of FinFram Screener (same level as `main.py`), create a file named `.env`:
+    
+    ```bash
+    touch .env
+    ```
+  </Step>
+  
+  <Step title="Add your API key">
+    Open `.env` and add your API key:
+    
+    ```env .env
+    API_KEY=your_api_token_here
+    ```
+    
+    Replace `your_api_token_here` with your actual API key from your provider.
+  </Step>
+  
+  <Step title="Verify configuration">
+    The API key will be automatically loaded when you run the application. See [How It Works](#how-it-works) below.
+  </Step>
+</Steps>
+
+## Getting API Keys
+
+<Tabs>
+  <Tab title="Groq">
+    ### Groq API Key
+    
+    1. Visit [Groq Console](https://console.groq.com)
+    2. Sign up or log in to your account
+    3. Navigate to **API Keys** section
+    4. Click **Create API Key**
+    5. Copy the key and add it to your `.env` file
+    
+    ```env .env
+    API_KEY=gsk_your_groq_api_key_here
+    ```
+    
+    <Note>
+      Groq offers free API access with generous rate limits, making it ideal for testing and development.
+    </Note>
+  </Tab>
+  
+  <Tab title="Together.ai">
+    ### Together.ai API Key
+    
+    1. Visit [Together.ai](https://api.together.xyz)
+    2. Create an account or sign in
+    3. Go to **Settings** → **API Keys**
+    4. Generate a new API key
+    5. Copy the key to your `.env` file
+    
+    ```env .env
+    API_KEY=your_together_api_key_here
+    ```
+    
+    <Note>
+      Together.ai provides access to various open-source models including Mixtral and Llama.
+    </Note>
+  </Tab>
+  
+  <Tab title="OpenAI">
+    ### OpenAI API Key
+    
+    1. Visit [OpenAI Platform](https://platform.openai.com)
+    2. Sign in to your account
+    3. Navigate to **API Keys** page
+    4. Click **Create new secret key**
+    5. Copy the key to your `.env` file
+    
+    ```env .env
+    API_KEY=sk-your_openai_api_key_here
+    ```
+    
+    <Warning>
+      Remember to also update your `settings.json` with the correct OpenAI endpoint URL.
+    </Warning>
+  </Tab>
+</Tabs>
+
+## How It Works
+
+The API key is loaded using the `python-dotenv` library in `src/config.py:1-7`:
+
+```python src/config.py
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+API_KEY = os.getenv("API_KEY")
+```
+
+The key is then used in API requests with Bearer token authentication (`src/groq_api.py:5-7`):
+
+```python src/groq_api.py
+headers = {
+    "Authorization": f"Bearer {API_KEY}",
+    "Content-Type": "application/json"
+}
+```
+
+## Security Best Practices
+
+<Warning>
+  **Never commit your .env file to version control**
+  
+  The `.env` file contains sensitive credentials and should never be shared or committed to Git.
+</Warning>
+
+<AccordionGroup>
+  <Accordion title="Add .env to .gitignore">
+    Ensure your `.gitignore` file includes `.env`:
+    
+    ```txt .gitignore
+    .env
+    *.env
+    .env.local
+    ```
+    
+    FinFram Screener already includes this in the default `.gitignore`.
+  </Accordion>
+  
+  <Accordion title="Use environment-specific files">
+    For different environments, use separate files:
+    
+    - `.env.development` - Development API keys
+    - `.env.production` - Production API keys
+    - `.env.example` - Template file (safe to commit)
+    
+    Create a `.env.example` to help other developers:
+    
+    ```env .env.example
+    API_KEY=your_api_key_here
+    ```
+  </Accordion>
+  
+  <Accordion title="Rotate keys regularly">
+    Periodically rotate your API keys, especially if:
+    - A key may have been exposed
+    - Team members with access leave
+    - You're moving from development to production
+  </Accordion>
+  
+  <Accordion title="Monitor API usage">
+    Regularly check your API provider's dashboard to:
+    - Monitor usage and costs
+    - Detect unusual activity
+    - Set up usage alerts and limits
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="API request fails with 401 Unauthorized">
+    **Possible causes:**
+    - API key is incorrect or expired
+    - `.env` file is not in the correct location
+    - Extra spaces in the `.env` file
+    
+    **Solutions:**
+    - Verify your API key is correct
+    - Ensure `.env` is in the project root directory
+    - Check for extra spaces: `API_KEY=your_key` (no spaces around `=`)
+  </Accordion>
+  
+  <Accordion title="API_KEY is None or empty">
+    **Possible causes:**
+    - `.env` file not found
+    - Variable name mismatch
+    - `.env` file encoding issues
+    
+    **Solutions:**
+    - Verify `.env` exists in the root directory
+    - Ensure the variable is named exactly `API_KEY`
+    - Check file encoding (should be UTF-8)
+  </Accordion>
+  
+  <Accordion title="Rate limit errors">
+    **Possible causes:**
+    - Exceeded API provider's rate limits
+    - Using free tier with limited requests
+    
+    **Solutions:**
+    - Check your provider's rate limits
+    - Upgrade to a paid tier if needed
+    - Implement retry logic with exponential backoff
+  </Accordion>
+</AccordionGroup>
+
+## Example .env File
+
+```env .env
+# FinFram Screener API Configuration
+# Replace with your actual API key from your provider
+
+API_KEY=gsk_your_groq_api_key_here
+
+# Optional: Add other environment-specific variables
+# DEBUG=True
+# LOG_LEVEL=INFO
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Settings" icon="gear" href="/configuration/settings">
+    Configure model and endpoint settings
+  </Card>
+  <Card title="Models" icon="brain" href="/configuration/models">
+    Choose and configure AI models
+  </Card>
+</CardGroup>
